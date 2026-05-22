@@ -9,7 +9,7 @@ exports.SignUp = async (req, res) => {
             user_email,
             user_phone,
             user_password,
-            role,
+            user_role,
         } = req.body;
 
         if (
@@ -42,7 +42,7 @@ exports.SignUp = async (req, res) => {
             user_email,
             user_phone,
             user_password: hashedPassword,
-            role: role || "USER",
+            user_role: user_role || "USER",
         });
 
         return res.status(201).json({
