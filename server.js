@@ -23,4 +23,7 @@ app.use(`/api/${apiVersion}/user`, require('./router/users'))
 app.use(`/api/${apiVersion}/tenant/user`, require('./router/tenant_user'))
 app.use(`/api/${apiVersion}/middleware`, require('./router/verify_token'))
 
-app.listen(port, () => console.log(`Server running on ${port}`));
+// Server
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
+});
