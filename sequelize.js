@@ -51,8 +51,10 @@ const sequelize = connectionUrl
         }
     );
 
-sequelize.authenticate()
-    .then(() => console.log("PostgreSQL Connected"))
-    .catch(err => console.log("DB Error:", err));
+if (!process.env.VERCEL) {
+    sequelize.authenticate()
+        .then(() => console.log("PostgreSQL Connected"))
+        .catch(err => console.log("DB Error:", err));
+}
 
 module.exports = sequelize;
