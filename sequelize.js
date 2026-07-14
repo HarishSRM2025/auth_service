@@ -16,7 +16,7 @@
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
-const connectionUrl = process.env.DATABASE_URL || process.env.DB_URL;
+const connectionUrl = process.env.DB_URL;
 
 const commonOptions = {
     dialect: "postgres",
