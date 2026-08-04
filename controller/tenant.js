@@ -156,3 +156,36 @@ exports.getTenantBySlug = async (req, res) => {
         });
     }
 };
+
+exports.updateTenant = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { working_hours_per_day, standard_check_in_time, tenant_name, industry, plan, status } = req.body;
+        const tenant = await Tenant.findByPk(id);
+
+        if (!tenant) {
+            return res.status(404).json({ success: false, message: "Tenant not found" });
+        }
+
+        if (working_hours_per_day !== undefined) tenant.working_hours_per_day = parseFloat(working_hours_per_day);
+        if (standard_check_in_time !== undefined) tenant.standard_check_in_time = standard_check_in_time;
+        if (tenant_name) tenant.tenant_name = tenant_name;
+        if (industry) tenant.industry = industry;
+        if (plan) tenant.plan = plan;
+        if (status) tenant.status = status;
+
+        await tenant.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Tenant updated successfully",
+            data: tenant,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};

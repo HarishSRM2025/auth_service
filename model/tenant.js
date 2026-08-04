@@ -30,6 +30,14 @@ const Tenant = sequelize.define(
         },
         plan: {
             type: DataTypes.ENUM("enterprise", "pro", "starter"),
+        },
+        working_hours_per_day: {
+            type: DataTypes.FLOAT,
+            defaultValue: 8.0,
+        },
+        standard_check_in_time: {
+            type: DataTypes.STRING,
+            defaultValue: "09:00",
         }
     },
     {
