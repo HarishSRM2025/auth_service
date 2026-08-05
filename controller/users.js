@@ -131,4 +131,45 @@ exports.SignIn = async (req, res) => {
     }
 };
 
+exports.changePassword = async (req, res) => {
+    try {
+        const { user_email, old_password, new_password } = req.body;
 
+        if (!user_email || !old_password || !new_password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email, old password, and new password are required",
+            });
+        }
+
+        const user = await Users.findOne({ where: { user_email } });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const isMatch = await bcrypt.compare(old_password, user.user_password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Incorrect current password",
+            });
+        }
+
+        user.user_password = await bcrypt.hash(new_password, 10);
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password changed successfully",
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};

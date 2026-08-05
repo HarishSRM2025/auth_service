@@ -27,7 +27,6 @@ exports.createTenantUser = async (req, res) => {
             });
         }
 
-        // Find tenant by id
         const tenant = await Tenant.findOne({ where: { id: tenant_id } });
         if (!tenant) {
             return res.status(400).json({
@@ -88,7 +87,6 @@ exports.signinTenantUser = async (req, res) => {
             });
         }
 
-        // Find tenant by id
         const tenant = await Tenant.findOne({ where: { id: tenant_id } });
         if (!tenant) {
             return res.status(400).json({
@@ -96,7 +94,7 @@ exports.signinTenantUser = async (req, res) => {
                 message: "Invalid tenant id",
             });
         }
-        
+
         const user = await TenantUser.findOne({
             where: { user_email, tenant_id: tenant.id },
         });
@@ -155,7 +153,6 @@ exports.signinTenantUser = async (req, res) => {
     }
 };
 
-
 exports.getUsersByTenant = async (req, res) => {
     try {
         const { tenant_id } = req.params;
@@ -205,6 +202,49 @@ exports.updateUserRole = async (req, res) => {
             success: true,
             message: "User role updated successfully.",
             data: user,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};
+
+exports.changeTenantUserPassword = async (req, res) => {
+    try {
+        const { user_email, old_password, new_password } = req.body;
+
+        if (!user_email || !old_password || !new_password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email, old password, and new password are required",
+            });
+        }
+
+        const user = await TenantUser.findOne({ where: { user_email } });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const isMatch = await bcrypt.compare(old_password, user.user_password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Incorrect current password",
+            });
+        }
+
+        user.user_password = await bcrypt.hash(new_password, 10);
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Password changed successfully",
         });
     } catch (error) {
         return res.status(500).json({
